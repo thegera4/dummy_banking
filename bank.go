@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"errors"
+	"github.com/thegera4/dummy_banking/file_operations" //add the path in your .mod file and then the name of your package
+	"github.com/Pallinder/go-randomdata" // 3rd party package
 )
 
 const fileName = "balance.txt"
@@ -12,7 +11,7 @@ const fileName = "balance.txt"
 func main() {
 
 	var option int
-	balance, err := readBalanceFromFile()
+	balance, err := file_operations.GetFloatFromFile(fileName, 10000)
 
 	if err != nil {
 		fmt.Println("ERROR")
@@ -21,16 +20,13 @@ func main() {
 		//panic("Sorry can not continue")
 	}
 
-
 	fmt.Println("Welcome to Go Banking System")
+	fmt.Println("Reach us 24/7 at: ", randomdata.PhoneNumber())
 
 	//infinite loop made with an empty for
 	for  {
-		fmt.Println("What do you want to do?")
-		fmt.Println("1. Check balance")
-		fmt.Println("2. Deposit")
-		fmt.Println("3. Withdraw")
-		fmt.Println("4. Exit")
+		
+		presentMenu()
 
 		fmt.Print("Please select an option: ")
 		fmt.Scanln(&option)
@@ -48,7 +44,7 @@ func main() {
 					continue
 				}
 				balance += deposit
-				writeBalanceToFile(balance)
+				file_operations.WriteFloatToFile(fileName, balance)
 				fmt.Println("Your new balance is ", balance)
 			case 3:
 				fmt.Println("How much do you want to withdraw?")
@@ -63,7 +59,7 @@ func main() {
 					continue
 				} 
 				balance -= withdraw
-				writeBalanceToFile(balance)
+				file_operations.WriteFloatToFile(fileName, balance)
 				fmt.Println("Your new balance is ", balance)	
 			default:
 				fmt.Println("Exiting...!")
@@ -74,22 +70,4 @@ func main() {
 	
 	}
 
-}
-
-func writeBalanceToFile(balance float64) {
-	balanceText := fmt.Sprint(balance)
-	os.WriteFile(fileName, []byte(balanceText), 0644)
-}
-
-func readBalanceFromFile() (float64, error) {
-	data, err := os.ReadFile(fileName)
-	if err != nil {
-		return 10000, errors.New("Error reading file")
-	}
-	balanceText := string(data)
-	balance, err := strconv.ParseFloat(balanceText, 64)
-	if err != nil {
-		return 10000, errors.New("Error parsing balance")
-	}
-	return balance, nil
 }
